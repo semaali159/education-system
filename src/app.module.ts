@@ -10,12 +10,16 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './User/user.module';
 import { User } from './User/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProfilesModule } from './profiles/profile.module';
+import { StudentProfile } from './profiles/entities/student-profile.entity';
+import { TeacherProfile } from './profiles/entities/teacher-profile';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    ProfilesModule,
     // TenantModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -32,7 +36,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           port: config.get<number>('DB_PORT'),
           host: 'localhost',
           synchronize: process.env.NODE_ENV !== 'production',
-          entities: [User],
+          entities: [User,StudentProfile, TeacherProfile],
         };
       },
     }),

@@ -5,8 +5,9 @@ import { TeacherProfile } from './entities/teacher-profile';
 import { ProfilesService } from './profile.service';
 import { ProfilesController } from './profile.controller';
 import { User } from '../User/user.entity';
+import { UsersModule } from 'src/User/user.module';
 @Module({
-imports: [TypeOrmModule.forFeature([StudentProfile, TeacherProfile, User])],
+imports: [UsersModule,TypeOrmModule.forFeature([StudentProfile, TeacherProfile, User])],
 providers: [ProfilesService],
 controllers: [ProfilesController],
 exports: [ProfilesService],

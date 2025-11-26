@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StudentProfile } from './entities/student-profile.entity';
@@ -15,12 +15,14 @@ Repository<TeacherProfile>,
 ) {}
 async createStudentProfile(userId: number, gradeLevel?: string) {
 const user = await this.usersRepo.findOne({ where: { id: userId } });
-const profile = this.studentRepo.create({ user, gradeLevel });
+if(!user)  throw new NotFoundException()
+const profile = this.studentRepo.create({ user: { id: user.id }, gradeLevel });
 return this.studentRepo.save(profile);
 }
 async createTeacherProfile(userId: number, specialty?: string) {
 const user = await this.usersRepo.findOne({ where: { id: userId } });
-const profile = this.teacherRepo.create({ user, specialty });
+if(!user)  throw new NotFoundException()
+const profile = this.teacherRepo.create({  user: { id: user.id }, specialty });
 return this.teacherRepo.save(profile);
 }
 }
