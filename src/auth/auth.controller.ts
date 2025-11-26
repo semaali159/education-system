@@ -4,12 +4,8 @@ import {
   Controller,
   Post,
   UseGuards,
-  // UsePipes,
-  // ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// import { JwtStrategy } from './strategies/jwt.strategy';
-// import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import type { Request } from 'express';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';

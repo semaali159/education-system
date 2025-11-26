@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Role } from 'src/common/enums/roles.enum';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +15,7 @@ export class UsersService {
     email: string,
     password: string,
     username: string,
+    role?: Role
   ) {
 const alreadyUser =await this.findByEmail(email)
 if( alreadyUser)  throw new BadRequestException('user already exist');
@@ -22,6 +24,7 @@ if( alreadyUser)  throw new BadRequestException('user already exist');
       email,
       password: hashedPassword,
       username,
+      role
     })
     return await this.userRepository.save(user);
   }

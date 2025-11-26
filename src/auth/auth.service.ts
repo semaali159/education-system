@@ -24,6 +24,7 @@ export class AuthService {
       dto.email,
       dto.password,
       dto.username,
+      dto.role
     );
 
     return {
@@ -110,7 +111,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
   private getUserRoles(user: any): Role[] {
-    return user.roles?.length ? user.roles : [Role.STUDENT];
+    return user.role?.length ? user.role : [Role.STUDENT];
   }
   private async comparePassword(plain: string, hashed: string) {
     return bcrypt.compare(plain, hashed);

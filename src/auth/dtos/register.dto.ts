@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -7,6 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Role } from 'src/common/enums/roles.enum';
 
 export class RegisterDto {
   @IsEmail()
@@ -23,6 +25,8 @@ export class RegisterDto {
   @MinLength(6)
   @IsNotEmpty()
   password: string;
+@IsString()
+  role?: Role;
   // @IsString()
   // @IsOptional()
   // // tenantId: string; //In real application we got it from company domain
