@@ -12,7 +12,7 @@ import { User } from './User/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfilesModule } from './profiles/profile.module';
 import { StudentProfile } from './profiles/entities/student-profile.entity';
-import { TeacherProfile } from './profiles/entities/teacher-profile';
+import { TeacherProfile } from './profiles/entities/teacher-profile.entity';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
@@ -26,20 +26,18 @@ import { TeacherProfile } from './profiles/entities/teacher-profile';
       load: [config],
     }),
   TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        return {
-          type: 'postgres',
-          database: config.get<string>('DB_NAME'),
-          username: config.get<string>('DB_USER'),
-          password: config.get<string>('DB_PASSWORD'),
-          port: config.get<number>('DB_PORT'),
-          host: 'localhost',
-          synchronize: process.env.NODE_ENV !== 'production',
-          entities: [User,StudentProfile, TeacherProfile],
-        };
-      },
-    }),
+  inject: [ConfigService],
+  useFactory: (config: ConfigService) => ({
+    type: 'postgres',
+    host: config.get<string>('DB_HOST'),
+    port: config.get<number>('DB_PORT'),
+    username: config.get<string>('DB_USER'),
+    password: config.get<string>('DB_PASSWORD'),
+    database: config.get<string>('DB_NAME'),
+    synchronize: process.env.NODE_ENV !== 'production',  
+    autoLoadEntities: true, 
+  }),
+}),
   ],
   controllers: [],
   providers: [],

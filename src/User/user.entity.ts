@@ -2,9 +2,9 @@
 // import { Role } from 'src/common/enums/roles.enum';
 // // import { Types } from 'mongoose';
 
-import { Role } from "src/common/enums/roles.enum";
+import { Role } from "../../src/common/enums/roles.enum";
 import { StudentProfile } from "../profiles/entities/student-profile.entity";
-import { TeacherProfile } from "../profiles/entities/teacher-profile";
+import { TeacherProfile } from "../profiles/entities/teacher-profile.entity";
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 // @Schema()
@@ -40,6 +40,8 @@ role:Role
 isAccountVerified:boolean
 @Column({type: 'text',nullable:true})
   refreshToken?: string;
+@Column({default:false})
+isAdmin:boolean  
 @OneToOne(() => StudentProfile, (profile) => profile.user, { nullable: true })
 studentProfile?: StudentProfile;
 @OneToOne(() => TeacherProfile, (profile) => profile.user, { nullable: true })
