@@ -1,29 +1,8 @@
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { Role } from 'src/common/enums/roles.enum';
-// // import { Types } from 'mongoose';
-
-import { Role } from "../../src/common/enums/roles.enum";
+import { Course } from "src/courses/course.entity";
 import { StudentProfile } from "../profiles/entities/student-profile.entity";
 import { TeacherProfile } from "../profiles/entities/teacher-profile.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-
-// @Schema()
-// export class User {
-//   @Prop({ required: true })
-//   name: string;
-//   @Prop({ required: true, unique: true })
-//   email: string;
-//   @Prop({ required: true })
-//   password: string;
-//   @Prop()
-//   refreshToken?: string;
-//   @Prop({ type: [String], enum: Role, default: [Role.STUDENT] })
-//   roles: Role[];
-//   // @Prop({ index: true })
-//   // tenantId: string;
-// }
-
-// export const UserSchema = SchemaFactory.createForClass(User);
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Role } from "src/common/enums/roles.enum";
 @Entity({"name":"users"})
 export class User{
   @PrimaryGeneratedColumn()
@@ -46,4 +25,8 @@ isAdmin:boolean
 studentProfile?: StudentProfile;
 @OneToOne(() => TeacherProfile, (profile) => profile.user, { nullable: true })
 teacherProfile?: TeacherProfile;  
+@OneToMany(()=> Course, (course)=> course.teacher)
+coursesTaught:Course[]
+@ManyToMany(()=>Course, (course)=> course.students)
+coursesEnrolled:Course[]
 }

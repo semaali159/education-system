@@ -13,6 +13,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfilesModule } from './profiles/profile.module';
 import { StudentProfile } from './profiles/entities/student-profile.entity';
 import { TeacherProfile } from './profiles/entities/teacher-profile.entity';
+import { CourseModule } from './courses/course.module';
+import { CourseSessionsModule } from './course-sessions/course-sessions.module';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
@@ -20,6 +22,8 @@ import { TeacherProfile } from './profiles/entities/teacher-profile.entity';
     AuthModule,
     UsersModule,
     ProfilesModule,
+    CourseModule,
+    CourseSessionsModule,
     // TenantModule,
     ConfigModule.forRoot({
       isGlobal: true,
