@@ -15,6 +15,9 @@ import { StudentProfile } from './profiles/entities/student-profile.entity';
 import { TeacherProfile } from './profiles/entities/teacher-profile.entity';
 import { CourseModule } from './courses/course.module';
 import { CourseSessionsModule } from './course-sessions/course-sessions.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { SubmissionModule } from './submission/submission.module';
+import { AssignmentModule } from './assignment/assignment.module';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
@@ -24,6 +27,9 @@ import { CourseSessionsModule } from './course-sessions/course-sessions.module';
     ProfilesModule,
     CourseModule,
     CourseSessionsModule,
+    CloudinaryModule,
+    SubmissionModule,
+    AssignmentModule,
     // TenantModule,
     ConfigModule.forRoot({
       isGlobal: true,
