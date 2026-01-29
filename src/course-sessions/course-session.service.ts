@@ -25,21 +25,6 @@ export class CourseSessionsService {
     private dataSource: DataSource,
   ) {}
 
-  async createCourse(dto: CreateCourseDto, teacherId: number) {
-    const teacher = await this.userRepo.findOne({ where: { id: teacherId } });
-    if (!teacher) throw new NotFoundException('Teacher not found');
-
-    const course = this.courseRepo.create({
-      title: dto.title,
-      description: dto.description,
-      teacher,
-      startDate: dto.startDate,
-      sessionsCount: dto.sessionsCount,
-    });
-
-    return this.courseRepo.save(course);
-  }
-
   async addSchedulesAndGenerateSessions(courseId: number, dto: CreateSchedulesDto) {
     const course = await this.courseRepo.findOne({ where: { id: courseId } });
     if (!course) throw new NotFoundException('Course not found');

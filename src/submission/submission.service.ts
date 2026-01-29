@@ -11,18 +11,23 @@ import { Assignment } from '../assignment/assignment.entity';
 import { User } from 'src/User/user.entity';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { GradeSubmissionDto } from './dtos/gradeSubmission.dto';
+import { Enrollment } from 'src/Enrollments/Enrollment.entity';
+import { EnrollmentService } from 'src/Enrollments/Enrollment.service';
 
 @Injectable()
 export class SubmissionService {
+
   constructor(
+    
+  private enrollmentService: EnrollmentService,
     @InjectRepository(Submission)
     private submissionRepo: Repository<Submission>,
     @InjectRepository(Assignment)
     private assignmentRepo: Repository<Assignment>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
-    private cloudinaryService: CloudinaryService,
-  ) {}
+    // @InjectRepository (Enrollment) private readonly enrollmentRepository: Repository<Enrollment>,
+    private cloudinaryService: CloudinaryService,) {}
 
 
   async submit(
@@ -36,20 +41,20 @@ export class SubmissionService {
 
     const assignment = await this.assignmentRepo.findOne({
       where: { id: assignmentId },
-      relations: ['course', 'course.students'],
+      relations: ['course'],
     });
 
     if (!assignment) {
       throw new NotFoundException('Assignment not found');
     }
+    const isEnroll = await this.enrollmentService.getActiveEnrollmentOrFail(
+     studentId,
+    assignment.course.id,
+     );
 
-    const isEnrolled = assignment.course.students.some(
-      (s) => s.id === studentId,
-    );
-    if (!isEnrolled) {
-      throw new ForbiddenException('Not enrolled in this course');
-    }
-
+if(!isEnroll){
+  throw new BadRequestException('Not enrolled in this course')
+}
 
     const existing = await this.submissionRepo.findOne({
       where: {

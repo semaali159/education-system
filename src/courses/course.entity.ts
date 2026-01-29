@@ -3,32 +3,36 @@ import { CourseSessionSchedule } from "src/course-sessions/entities/course-sessi
 import { User } from "src/User/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Assignment } from "src/assignment/assignment.entity";
+import { Enrollment } from "src/Enrollments/Enrollment.entity";
 @Entity()
 export class Course {
-    @PrimaryGeneratedColumn()
-    id:number
-    
-    @Column()
-    title:string
-    
-    @Column({ nullable: true })
-    description:string
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'int' })
+  @Column()
+  title: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ type: 'int' })
   sessionsCount: number;
 
   @Column({ type: 'date' })
   startDate: Date;
 
-    @ManyToMany(()=>User,(user)=> user.coursesEnrolled)
-    @JoinTable({name:'course_students',joinColumn:{name:'courseId'},inverseJoinColumn:{name:'studenId'}})
-students:User[]
-@ManyToOne(()=>User, (user)=> user.coursesTaught,{eager:true})
-teacher: User
-@OneToMany(() => CourseSession, (session) => session.course, { cascade: true })
+  @ManyToOne(() => User, user => user.coursesTaught, { eager: true })
+  teacher: User;
+
+  @OneToMany(() => CourseSession, s => s.course, { cascade: true })
   sessions: CourseSession[];
-  @OneToMany(() => CourseSessionSchedule, (s) => s.course, { cascade: true })
+
+  @OneToMany(() => CourseSessionSchedule, s => s.course, { cascade: true })
   schedules: CourseSessionSchedule[];
-  @OneToMany(() => Assignment, (a) => a.course)
-assignments: Assignment[];
+
+  @OneToMany(() => Assignment, a => a.course)
+  assignments: Assignment[];
+
+  @OneToMany(() => Enrollment, e => e.course)
+  enrollments: Enrollment[];
 }

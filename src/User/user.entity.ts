@@ -3,6 +3,8 @@ import { StudentProfile } from "../profiles/entities/student-profile.entity";
 import { TeacherProfile } from "../profiles/entities/teacher-profile.entity";
 import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "src/common/enums/roles.enum";
+import { Enrollment } from "src/Enrollments/Enrollment.entity";
+import { Exclude } from "class-transformer";
 @Entity({"name":"users"})
 export class User{
   @PrimaryGeneratedColumn()
@@ -10,6 +12,7 @@ export class User{
   @Column({type:"varchar",length:'150',unique:true})
 email:string
 @Column()
+@Exclude()
 password:string
 @Column({type:"varchar",length:'150',nullable:true})
 username:string
@@ -27,6 +30,9 @@ studentProfile?: StudentProfile;
 teacherProfile?: TeacherProfile;  
 @OneToMany(()=> Course, (course)=> course.teacher)
 coursesTaught:Course[]
-@ManyToMany(()=>Course, (course)=> course.students)
-coursesEnrolled:Course[]
+// @ManyToMany(()=>Course, (course)=> course.students)
+// coursesEnrolled:Course[]
+@OneToMany(() => Enrollment, e => e.student)
+enrollments: Enrollment[];
+
 }

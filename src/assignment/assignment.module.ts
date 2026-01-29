@@ -5,11 +5,13 @@ import { AssignmentService } from './assignment.service';
 import { AssignmentController } from './assignment.controller';
 import { Course } from 'src/courses/course.entity';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Assignment, Course]),
     CloudinaryModule,
+    EventEmitterModule.forRoot()
   ],
   controllers: [AssignmentController],
   providers: [AssignmentService],

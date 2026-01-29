@@ -11,10 +11,15 @@ import { Course } from 'src/courses/course.entity';
 import { CreateAssignmentDto } from './dtos/createAssignment.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { SubmissionType } from '../common/enums/submission-type';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { plainToInstance } from 'class-transformer';
+import { createCipheriv } from 'crypto';
+import { CreateAssignmentResponseDto } from './dtos/response/createAssignment.dto';
 
 @Injectable()
 export class AssignmentService {
   constructor(
+       private eventEmitter: EventEmitter2,
     @InjectRepository(Assignment)
     private assignmentRepo: Repository<Assignment>,
 
@@ -22,6 +27,7 @@ export class AssignmentService {
     private courseRepo: Repository<Course>,
 
     private cloudinaryService: CloudinaryService,
+ 
   ) {}
 
   async create(
@@ -41,22 +47,19 @@ export class AssignmentService {
       throw new ForbiddenException('Not your course');
     }
 
-    if (dto.submissionType === SubmissionType.FILE && !file) {
-      throw new BadRequestException('File is required for this assignment');
-    }
-
     let fileUrl: string | undefined;
     let filePublicId: string | undefined;
-
-    if (file) {
+    if (dto.submissionType === SubmissionType.FILE) {  
+        if (!file) {
+    throw new BadRequestException('File is required for this assignment');
+  }    
       const uploadResult = await this.cloudinaryService.uploadFile(file);
       fileUrl = uploadResult.secure_url;
       filePublicId = uploadResult.public_id;
     }
-    if(!filePublicId || !fileUrl ){
-      throw new BadRequestException('upload file failds')
-    }
-    const assignment = this.assignmentRepo.create({
+
+    
+       const assignment = this.assignmentRepo.create({
       title: dto.title,
       description: dto.description,
       dueDate: dto.dueDate,
@@ -65,8 +68,21 @@ export class AssignmentService {
       filePublicId,
       course,
     });
-
-    return this.assignmentRepo.save(assignment);
+    const savedAssignment = await this.assignmentRepo.save(assignment)
+    this.eventEmitter.emit('assignment.created',{assignmentId:assignment.id,courseId: assignment.course.id,title: assignment.title }
+    )
+   console.log(savedAssignment)
+    return plainToInstance(CreateAssignmentResponseDto,
+      {
+        title: savedAssignment.title,
+        description: savedAssignment.description,
+        dueDate: savedAssignment.dueDate,
+        submissionType: savedAssignment.submissionType,
+        teacher: {
+          id: course.teacher.id,
+          username: course.teacher.username,
+        },
+      },{excludeExtraneousValues: true}) ;
   }
     async getCourseAssignments(courseId: number) {
     return this.assignmentRepo.find({

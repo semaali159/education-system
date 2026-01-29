@@ -7,7 +7,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CourseController } from "./course.controller";
 import { CourseSessionSchedule } from "src/course-sessions/entities/course-session-schedual";
 import { CourseSession } from "src/course-sessions/entities/course-session.entity";
+import { EnrollmentModule } from "src/Enrollments/Enrollment.module";
+import { Enrollment } from "src/Enrollments/Enrollment.entity";
 
-@Module({imports:[UsersModule,TypeOrmModule.forFeature([Course,User,CourseSessionSchedule,CourseSession])],
+@Module({imports:[UsersModule,EnrollmentModule,TypeOrmModule.forFeature([Course,User,CourseSessionSchedule,CourseSession,Enrollment])],
     providers:[CourseService],controllers:[CourseController],exports:[CourseService]})
     export class CourseModule{}

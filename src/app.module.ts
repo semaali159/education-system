@@ -18,6 +18,8 @@ import { CourseSessionsModule } from './course-sessions/course-sessions.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { SubmissionModule } from './submission/submission.module';
 import { AssignmentModule } from './assignment/assignment.module';
+import { EnrollmentModule } from './Enrollments/Enrollment.module';
+import { NotificationModule } from './Notification/Notification.module';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
@@ -30,6 +32,8 @@ import { AssignmentModule } from './assignment/assignment.module';
     CloudinaryModule,
     SubmissionModule,
     AssignmentModule,
+    EnrollmentModule,
+    NotificationModule,
     // TenantModule,
     ConfigModule.forRoot({
       isGlobal: true,

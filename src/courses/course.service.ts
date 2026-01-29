@@ -4,11 +4,16 @@ import { Repository } from "typeorm";
 import { Course } from "./course.entity";
 import { CreateCourseDto, UpdateCourseDto } from "./dtos/course.dto";
 import { User } from "src/User/user.entity";
+import { Enrollment } from "src/Enrollments/Enrollment.entity";
+import { plainToInstance } from "class-transformer";
+import { createCourseResponseDto } from "./dtos/course-response.dto";
 
 @Injectable()
 export class CourseService{
-    constructor(@InjectRepository(Course)private readonly CourseRepository:Repository<Course>,@InjectRepository(User)
-    private readonly UserRepository: Repository<User>,){}
+    constructor(
+    @InjectRepository(Course)private readonly CourseRepository:Repository<Course>,
+    @InjectRepository(User) private readonly UserRepository: Repository<User>,
+    @InjectRepository (Enrollment) private readonly enrollmentRepository: Repository<Enrollment>){}
 async create(dto:CreateCourseDto,teacherId:number){
 const teacher = await this.UserRepository.findOne({ where: { id: teacherId } });
 
@@ -21,7 +26,10 @@ const teacher = await this.UserRepository.findOne({ where: { id: teacherId } });
       teacher,
     });
 
-    return this.CourseRepository.save(course);
+    const savedCourse = this.CourseRepository.save(course);
+    return plainToInstance(createCourseResponseDto, savedCourse, {
+    excludeExtraneousValues: true,  
+  });
 }
 async update(id:number,dto: UpdateCourseDto, teacherId:number,){
        const course = await this.CourseRepository.findOne({
@@ -58,7 +66,8 @@ async update(id:number,dto: UpdateCourseDto, teacherId:number,){
   async getOne(id: number) {
     return this.CourseRepository.findOne({
       where: { id },
-      relations: ['teacher', 'students'],
+      relations: ['teacher', 'enrollments','enrollments.student'
+      ],
     });
   }
 async enroll(courseId: number, studentId: number) {
@@ -70,18 +79,16 @@ async enroll(courseId: number, studentId: number) {
 
     const course = await this.CourseRepository.findOne({
       where: { id: courseId },
-      relations: ['students'],
+      relations: ['enrollments'],
     });
 
     if (!course) throw new NotFoundException('Course not found');
-
-    if (course.students.some((s) => s.id === studentId)) {
-      throw new BadRequestException('You are already enrolled');
-    }
-
-    course.students.push(student);
-
-    return this.CourseRepository.save(course);
+    const existing = await this.enrollmentRepository.findOne({where:{student:{id:studentId}, course:{id:courseId}}})
+    if(existing){ throw new BadRequestException('already enrolled')}
+    const enrollment = this.enrollmentRepository.create({
+      student,course,status:'ACTIVE'
+    })
+    return this.enrollmentRepository.save(enrollment)
   }
 async getEnrolledCourses(studentId: number) {
 
@@ -92,11 +99,14 @@ async getEnrolledCourses(studentId: number) {
   if (!student) throw new NotFoundException('Student not found');
   if (student.role !== 'student')
     throw new ForbiddenException('Only students can view enrolled courses');
-
-  return this.CourseRepository.find({
-    where: { students: { id: studentId } },
-    relations: ['teacher'],
-    order: { id: 'DESC' },
-  });
+const enrollments = await this.enrollmentRepository.find({
+  where:{
+    student:{id:studentId},
+    status:'ACTIVE'
+  },
+  relations:['course','course.teacher']
+})
+return enrollments.map(e=> e.course)
+ 
 }
 }

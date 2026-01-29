@@ -6,11 +6,13 @@ import { SubmissionController } from './submission.controller';
 import { Assignment } from '../assignment/assignment.entity';
 import { User } from 'src/User/user.entity';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { EnrollmentModule } from 'src/Enrollments/Enrollment.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Submission, Assignment, User]),
     CloudinaryModule,
+    EnrollmentModule
   ],
   controllers: [SubmissionController],
   providers: [SubmissionService],
