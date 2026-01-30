@@ -1,7 +1,8 @@
-import { Injectable, ForbiddenException } from "@nestjs/common";
+import { Injectable, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Enrollment } from "./Enrollment.entity";
+import { NotFoundError } from "rxjs";
 
 @Injectable()
 export class EnrollmentService {
@@ -29,4 +30,11 @@ export class EnrollmentService {
 
     return enrollment;
   }
+async getTeacherIdByEnrollmentId(enrollmnetId:number){
+const enrollment = await this.enrollmentRepo.findOne({where:{id:enrollmnetId},relations:['course','course.teacher']})
+if(!enrollment){
+   throw new NotFoundException("enrollment not found")
+}
+return enrollment.course.teacher.id;
+}
 }

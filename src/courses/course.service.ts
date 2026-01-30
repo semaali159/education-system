@@ -6,11 +6,13 @@ import { CreateCourseDto, UpdateCourseDto } from "./dtos/course.dto";
 import { User } from "src/User/user.entity";
 import { Enrollment } from "src/Enrollments/Enrollment.entity";
 import { plainToInstance } from "class-transformer";
-import { createCourseResponseDto } from "./dtos/course-response.dto";
+import { createCourseResponseDto, enrollCourseResponseDto } from "./dtos/course-response.dto";
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class CourseService{
     constructor(
+      private eventEmitter: EventEmitter2,
     @InjectRepository(Course)private readonly CourseRepository:Repository<Course>,
     @InjectRepository(User) private readonly UserRepository: Repository<User>,
     @InjectRepository (Enrollment) private readonly enrollmentRepository: Repository<Enrollment>){}
@@ -88,8 +90,11 @@ async enroll(courseId: number, studentId: number) {
     const enrollment = this.enrollmentRepository.create({
       student,course,status:'ACTIVE'
     })
-    return this.enrollmentRepository.save(enrollment)
-  }
+    const savedEnrollment= await this.enrollmentRepository.save(enrollment)
+this.eventEmitter.emit('enrollment.created',{enrollmentId:savedEnrollment.id,studentName:student.username})
+console.log(savedEnrollment)
+return plainToInstance(enrollCourseResponseDto,savedEnrollment)  
+}
 async getEnrolledCourses(studentId: number) {
 
   const student = await this.UserRepository.findOne({
