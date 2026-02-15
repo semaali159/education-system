@@ -57,9 +57,7 @@ export class AppLoggerService implements LoggerService {
     });
   }
 
-  /**
-   * Helper to safely build metadata object
-   */
+
   private buildMeta(context?: string, meta?: Record<string, any>) {
     return {
       ...(context && { context }),
