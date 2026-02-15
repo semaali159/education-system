@@ -4,6 +4,7 @@ import { User } from "src/User/user.entity";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Assignment } from "src/assignment/assignment.entity";
 import { Enrollment } from "src/Enrollments/Enrollment.entity";
+import { CourseState } from "src/common/enums/courseState.enum";
 @Entity()
 export class Course {
   @PrimaryGeneratedColumn()
@@ -20,6 +21,12 @@ export class Course {
 
   @Column({ type: 'date' })
   startDate: Date;
+  
+  @Column({ type: 'date' ,default:"2026-12-01"})
+  endDate: Date;
+
+  @Column({type:'enum', enum:CourseState, default:CourseState.DRAFT})
+  status : CourseState
 
   @ManyToOne(() => User, user => user.coursesTaught, { eager: true })
   teacher: User;

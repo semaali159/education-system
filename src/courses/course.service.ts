@@ -6,8 +6,9 @@ import { CreateCourseDto, UpdateCourseDto } from "./dtos/course.dto";
 import { User } from "src/User/user.entity";
 import { Enrollment } from "src/Enrollments/Enrollment.entity";
 import { plainToInstance } from "class-transformer";
-import { createCourseResponseDto, enrollCourseResponseDto } from "./dtos/course-response.dto";
+import { createCourseResponseDto, EnrollCourseResponseDto } from "./dtos/course-response.dto";
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CourseState } from "src/common/enums/courseState.enum";
 
 @Injectable()
 export class CourseService{
@@ -93,7 +94,7 @@ async enroll(courseId: number, studentId: number) {
     const savedEnrollment= await this.enrollmentRepository.save(enrollment)
 this.eventEmitter.emit('enrollment.created',{enrollmentId:savedEnrollment.id,studentName:student.username})
 console.log(savedEnrollment)
-return plainToInstance(enrollCourseResponseDto,savedEnrollment)  
+return plainToInstance(EnrollCourseResponseDto,savedEnrollment,  { excludeExtraneousValues: true })  
 }
 async getEnrolledCourses(studentId: number) {
 
@@ -113,5 +114,25 @@ const enrollments = await this.enrollmentRepository.find({
 })
 return enrollments.map(e=> e.course)
  
+}
+async updateCourseState(teacherId:number, courseId: number, newStatus:CourseState){
+const course = await this.CourseRepository.findOne({where:{id:courseId}, relations:['sessions', 'enrollments']}) 
+if(!course){
+  throw new NotFoundException('course not found')
+}
+if(course.teacher.id !== teacherId){
+  throw new ForbiddenException()
+}
+if(course.status == CourseState.AECHIVED){
+  throw new BadRequestException('Archived course')
+}
+if(newStatus === CourseState.PUBLISHED ||
+   newStatus === CourseState.AECHIVED &&
+    course.status.length>0){
+throw new BadRequestException('student already enrolled')
+}
+course.status = newStatus;
+const save = this.CourseRepository.save(course)
+return plainToInstance(createCourseResponseDto,save,{excludeExtraneousValues: true })
 }
 }

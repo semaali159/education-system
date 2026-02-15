@@ -16,25 +16,32 @@ export class createCourseResponseDto {
   teacherId:string
 }
 
-export class enrollCourseResponseDto{
-    @Expose()
-    id: number;
-  
-    @Expose()
-    status: 'ACTIVE' | 'PENDING' | 'DROPPED';
-  
-    @Expose()
-    enrolledAt: Date;
+export class EnrollCourseResponseDto {
+  @Expose()
+  id: number;
 
-    @Expose()
-    courseName:string
+  @Expose()
+  status: 'ACTIVE' | 'PENDING' | 'DROPPED';
 
-    @Expose()
-    @Transform(({obj})=>{plainToInstance(teacherResponeDto,obj.user)})
-    @Type(()=>teacherResponeDto)
-    teacherId:teacherResponeDto
-    @Exclude()
-@Transform(({obj})=>{plainToInstance(createCourseResponseDto,obj.course)})
-    @Type(()=>teacherResponeDto)
-    course:teacherResponeDto
+  @Expose()
+  enrolledAt: Date;
+
+  @Expose()
+  @Transform(({ obj }) => obj.course.title)
+  courseName: string;
+
+  @Expose()
+  @Transform(({ obj }) =>
+    ({
+      id: obj.course.teacher.id,
+      username: obj.course.teacher.username,
+    })
+  )
+  teacher: teacherResponeDto;
+
+  @Exclude()
+  course: any;
+
+  @Exclude()
+  student: any;
 }

@@ -27,6 +27,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { CourseEnrollmentGuard } from './guards/courseEnrollment.guard';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -89,7 +90,7 @@ export class CourseController {
 
   @Post(':id/enroll')
   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard,CourseEnrollmentGuard)
   @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'Enroll in a course (Student only)' })
   @ApiParam({ name: 'id', type: Number })

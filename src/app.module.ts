@@ -20,10 +20,12 @@ import { SubmissionModule } from './submission/submission.module';
 import { AssignmentModule } from './assignment/assignment.module';
 import { EnrollmentModule } from './Enrollments/Enrollment.module';
 import { NotificationModule } from './Notification/Notification.module';
+import { LoggerModule } from './common/services/logger/logger.module';
 // import { TenantModule } from './tenants/tenant.module';
 
 @Module({
   imports: [
+    LoggerModule,
     AuthModule,
     UsersModule,
     ProfilesModule,
